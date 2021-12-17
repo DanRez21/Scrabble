@@ -359,7 +359,7 @@ def play_game(word_list):
             print("Current hand: ", end = '')
             display_hand(hand)
         if not repeat and check("Would you like to substitute a letter? ") == 'yes':
-            letter = input("Which letter would you like to replace: ")
+            letter = input("Which letter would you like to replace: ").lower()
             hand = substitute_hand(hand, letter)
         print()
         sums = play_hand(hand, word_list)
