@@ -94,7 +94,7 @@ def get_word_score(word, n):
     first = 0
     for i in word.lower():
         first += SCRABBLE_LETTER_VALUES.get(i, 0)
-    return first * max(1, 7*len(word)-3*(n-len(word)))
+    return first * max(1, 7*len(word) - 3*(n - len(word)))
 #
 # Make sure you understand how this function works and what it does!
 #
@@ -137,7 +137,7 @@ def deal_hand(n):
     hand={}
     num_vowels = int(math.ceil(n / 3))
 
-    for i in range(num_vowels-1):
+    for i in range(num_vowels - 1):
         x = random.choice(VOWELS)
         hand[x] = hand.get(x, 0) + 1
     hand['*'] = 1    
@@ -174,11 +174,6 @@ def update_hand(hand, word):
     return hand_copy
 # Problem #3: Test word validity
 #
-def word_check(word, hand, new_word = ''):
-    for i in word.lower():
-        if i not in hand.keys() or new_word.lower().count(i) > hand[i]:
-            return False
-    return True
 
 def is_valid_word(word, hand, word_list):
     """
@@ -191,17 +186,16 @@ def is_valid_word(word, hand, word_list):
     word_list: list of lowercase strings
     returns: boolean
     """
-    if '*' not in word:
-        if word.lower() in word_list:
-            return word_check(word, hand, word)
-        return False
-    if word.lower().count('*') > 1:
-        return False
+    for i in word.lower():
+        if i not in hand.keys() or word.lower().count(i) > hand[i]:
+            return False
+
     for let in VOWELS:
         new_word = word.replace('*', let).lower()
         if new_word in word_list:
-            return word_check(word, hand, new_word)
+            return True
     return False
+
 #
 # Problem #5: Playing a hand
 #
@@ -267,6 +261,8 @@ def play_hand(hand, word_list):
             hand = update_hand(hand, c)
     if c != '!!':
         msg = "Ran out of letters. "
+    else:
+        msg = ''
     print(f"{msg}Total score for this hand: {sums} points")
     return sums
 
@@ -310,14 +306,6 @@ def substitute_hand(hand, letter):
                 break
     return hand_copy
 
-def check(msg):
-    while True:
-        c = input(msg).lower()
-        if c != 'yes' and c != 'no':
-            print("Can you please answer correctly(yes or no)? ")
-        else:
-            return c
-
 def play_game(word_list):
     """
     Allow the user to play a series of hands
@@ -348,6 +336,13 @@ def play_game(word_list):
 
     word_list: list of lowercase strings
     """
+    def check(msg):
+        while True:
+            c = input(msg).lower()
+            if c != 'yes' and c != 'no':
+                print("Can you please answer correctly(yes or no)?\n")
+            else:
+                return c 
     total, repeat, sums = 0, 0, 0
     while True:
         try:
@@ -363,10 +358,10 @@ def play_game(word_list):
             hand = deal_hand(HAND_SIZE)
             print("Current hand: ", end = '')
             display_hand(hand)
-        print()
         if not repeat and check("Would you like to substitute a letter? ") == 'yes':
             letter = input("Which letter would you like to replace: ")
             hand = substitute_hand(hand, letter)
+        print()
         sums = play_hand(hand, word_list)
         print('-'*13)
         if repeat == 0:
